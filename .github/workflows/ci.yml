@@ -17,6 +17,10 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v5
+      - name: Pre-pull PostgreSQL image for Testcontainers
+        run: |
+          echo "::notice::$(docker version --format 'client {{.Client.APIVersion}} / server {{.Server.APIVersion}} min {{.Server.MinAPIVersion}}')"
+          docker pull postgres:16-alpine
       # Unit tests plus Testcontainers integration tests (Docker is available on GitHub runners).
       - name: Build and test
         run: ./gradlew build --no-daemon 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
@@ -31,6 +35,10 @@ jobs:
             python3 - "$f" <<'PY'
           import sys, xml.etree.ElementTree as ET
           root = ET.parse(sys.argv[1]).getroot()
+          out = root.findtext('system-out') or ''
+          for line in out.splitlines():
+              if any(k in line for k in ('ERROR', 'WARN', 'Docker', 'docker', 'API', 'pull')):
+                  print('::warning::' + line[:600])
           for case in root.iter('testcase'):
               for kind in ('failure', 'error'):
                   node = case.find(kind)

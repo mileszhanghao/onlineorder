@@ -17,15 +17,25 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v5
-      - name: Pre-pull PostgreSQL image for Testcontainers
-        run: |
-          echo "::notice::$(docker version --format 'client {{.Client.APIVersion}} / server {{.Server.APIVersion}} min {{.Server.MinAPIVersion}}')"
-          for img in postgres:16-alpine public.ecr.aws/docker/library/postgres:16-alpine; do
-            if out=$(docker pull "$img" 2>&1); then echo "::notice::pulled $img"; else echo "::warning::pull $img failed: $(echo "$out" | tail -3 | tr '\n' ' ')"; fi
-          done
       # Unit tests plus Testcontainers integration tests (Docker is available on GitHub runners).
       - name: Build and test
         run: ./gradlew build --no-daemon 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
+      - name: Summarize test results
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import glob, os, xml.etree.ElementTree as ET
+          rows, totals = [], [0, 0, 0, 0]
+          for f in sorted(glob.glob('build/test-results/test/*.xml')):
+              r = ET.parse(f).getroot()
+              n, fl, er, sk = (int(r.get(k, 0)) for k in ('tests', 'failures', 'errors', 'skipped'))
+              totals = [a + b for a, b in zip(totals, (n, fl, er, sk))]
+              rows.append(f"| {r.get('name').split('.')[-1]} | {n} | {fl + er} | {sk} |")
+          summary = "| Test class | Tests | Failed | Skipped |\n|---|---|---|---|\n" + "\n".join(rows)
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write(summary + "\n")
+          print(f"::notice::backend tests: {totals[0]} run, {totals[1] + totals[2]} failed, {totals[3]} skipped")
+          PY
       - name: Report failures as annotations
         if: failure()
         run: |
@@ -37,10 +47,6 @@ jobs:
             python3 - "$f" <<'PY'
           import sys, xml.etree.ElementTree as ET
           root = ET.parse(sys.argv[1]).getroot()
-          out = root.findtext('system-out') or ''
-          for line in out.splitlines():
-              if any(k in line for k in ('ERROR', 'WARN', 'Docker', 'docker', 'API', 'pull')):
-                  print('::warning::' + line[:600])
           for case in root.iter('testcase'):
               for kind in ('failure', 'error'):
                   node = case.find(kind)

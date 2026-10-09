@@ -20,7 +20,9 @@ jobs:
       - name: Pre-pull PostgreSQL image for Testcontainers
         run: |
           echo "::notice::$(docker version --format 'client {{.Client.APIVersion}} / server {{.Server.APIVersion}} min {{.Server.MinAPIVersion}}')"
-          docker pull postgres:16-alpine
+          for img in postgres:16-alpine public.ecr.aws/docker/library/postgres:16-alpine; do
+            if out=$(docker pull "$img" 2>&1); then echo "::notice::pulled $img"; else echo "::warning::pull $img failed: $(echo "$out" | tail -3 | tr '\n' ' ')"; fi
+          done
       # Unit tests plus Testcontainers integration tests (Docker is available on GitHub runners).
       - name: Build and test
         run: ./gradlew build --no-daemon 2>&1 | tee build.log; exit ${PIPESTATUS[0]}

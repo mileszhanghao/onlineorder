@@ -2,6 +2,8 @@
 
 A food-ordering web app. Customers sign up, browse restaurant menus, build a cart and place orders, then view their order history.
 
+**Live demo:** https://mileszhanghao.github.io/onlineorder/ — the front end in demo mode, with sample data kept in your browser so it runs without a server. Log in as `demo@example.com` / `demo-password`. The full stack (Spring Boot + PostgreSQL) runs locally with `docker compose up`.
+
 **Stack:** Java 21 · Spring Boot 3.5 (Web, Security, Data JDBC, Validation, Cache) · PostgreSQL 16 · Flyway · Caffeine · React 19 + TypeScript · Vite · Ant Design · TanStack Query · JUnit 5 · Mockito · Testcontainers · Vitest · Docker Compose · GitHub Actions
 
 ## Background

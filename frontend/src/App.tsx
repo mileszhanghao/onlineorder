@@ -2,8 +2,9 @@ import { ShoppingCartOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge, Button, Layout, Space, Spin, Typography } from 'antd'
 import { useState } from 'react'
-import { ApiError, api } from './api'
+import { ApiError, IS_DEMO, api } from './api'
 import AuthPanel from './components/AuthPanel'
+import DemoBanner from './components/DemoBanner'
 import CartDrawer from './components/CartDrawer'
 import MenuBrowser from './components/MenuBrowser'
 import OrdersDrawer from './components/OrdersDrawer'
@@ -48,6 +49,7 @@ export default function App() {
         )}
       </Header>
       <Content className="app-content">
+        {IS_DEMO && <DemoBanner />}
         {me.isPending && <Spin />}
         {notLoggedIn && <AuthPanel />}
         {me.isError && !notLoggedIn && (

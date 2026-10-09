@@ -1,17 +1,13 @@
+import { ApiError, type Api } from './apiTypes'
+import { demoApi } from './demo/demoApi'
 import type { Cart, Customer, Order, Restaurant, SignupInput } from './types'
 
+export { ApiError } from './apiTypes'
+
+/** True for the public GitHub Pages build, which runs without a backend. */
+export const IS_DEMO = import.meta.env.VITE_DEMO === 'true'
+
 const BASE = '/api'
-
-/** Error carrying the HTTP status and the server's problem-detail message. */
-export class ApiError extends Error {
-  readonly status: number
-
-  constructor(status: number, message: string) {
-    super(message)
-    this.name = 'ApiError'
-    this.status = status
-  }
-}
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(BASE + path, {
@@ -36,16 +32,18 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 const json = (body: unknown): RequestInit => ({ method: 'POST', body: JSON.stringify(body) })
 
-export const api = {
+export const httpApi: Api = {
   me: () => request<Customer>('/auth/me'),
   // Credentials go in the request body. The course version put them in the URL query string.
-  login: (email: string, password: string) => request<Customer>('/auth/login', json({ email, password })),
+  login: (email, password) => request<Customer>('/auth/login', json({ email, password })),
   signup: (input: SignupInput) => request<Customer>('/auth/signup', json(input)),
   logout: () => request<void>('/auth/logout', { method: 'POST' }),
   restaurants: () => request<Restaurant[]>('/restaurants'),
   cart: () => request<Cart>('/cart'),
-  addToCart: (menuItemId: number) => request<Cart>('/cart/items', json({ menuItemId })),
-  removeFromCart: (menuItemId: number) => request<Cart>(`/cart/items/${menuItemId}`, { method: 'DELETE' }),
+  addToCart: (menuItemId) => request<Cart>('/cart/items', json({ menuItemId })),
+  removeFromCart: (menuItemId) => request<Cart>(`/cart/items/${menuItemId}`, { method: 'DELETE' }),
   checkout: () => request<Order>('/orders', { method: 'POST' }),
   orders: () => request<Order[]>('/orders'),
 }
+
+export const api: Api = IS_DEMO ? demoApi : httpApi

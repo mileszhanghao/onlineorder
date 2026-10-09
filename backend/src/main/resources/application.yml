@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: onlineorder
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:onlineorder}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:secret}
+  flyway:
+    enabled: true
+  cache:
+    cache-names: restaurants
+    caffeine:
+      spec: maximumSize=100,expireAfterWrite=60s
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: strict
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

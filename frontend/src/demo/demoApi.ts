@@ -18,7 +18,7 @@ interface DemoState {
   nextOrderId: number
 }
 
-const KEY = 'onlineorder-demo-v1'
+const KEY = 'siuyeh-demo-v1'
 export const DEMO_EMAIL = 'demo@example.com'
 export const DEMO_PASSWORD = 'demo-password'
 

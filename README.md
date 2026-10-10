@@ -1,14 +1,16 @@
-# OnlineOrder
+# SiuYeh 宵夜
 
-A food-ordering web app. Customers sign up, browse restaurant menus, build a cart and place orders, then view their order history.
+*Siu yeh* is Cantonese for a late-night snack. SiuYeh is a food-ordering web app for three made-up late-night spots around Seattle: a Hong Kong–style cha chaan teng in the U District, a dim sum house in the Chinatown–International District, and a waterfront stand serving Seattle classics such as teriyaki and clam chowder. Customers sign up, browse the menus, build a cart, check out, and see their order history.
 
-**Live demo:** https://mileszhanghao.github.io/onlineorder/ — the front end in demo mode, with sample data kept in your browser so it runs without a server. Log in as `demo@example.com` / `demo-password`. The full stack (Spring Boot + PostgreSQL) runs locally with `docker compose up`.
+**Live demo:** https://mileszhanghao.github.io/siuyeh/ — the front end in demo mode. Sample data lives in your browser, so no server is needed. Log in as `demo@example.com` / `demo-password`. The full stack (Spring Boot + PostgreSQL) runs locally with `docker compose up`.
+
+The menu has 17 dishes, each with a bilingual name, a description and a photo. The photos come from Wikimedia Commons; authors and licenses are in [CREDITS.md](CREDITS.md). The menu is seeded by the Flyway migration `V3__siuyeh_menu.sql`, and the demo uses a copy of the same data.
 
 **Stack:** Java 21 · Spring Boot 3.5 (Web, Security, Data JDBC, Validation, Cache) · PostgreSQL 16 · Flyway · Caffeine · React 19 + TypeScript · Vite · Ant Design · TanStack Query · JUnit 5 · Mockito · Testcontainers · Vitest · Docker Compose · GitHub Actions
 
 ## Background
 
-I first built this app in 2025 following LaiOffer's OnlineOrder course: Spring Boot, Spring Data JDBC, PostgreSQL, Spring Security form login, Caffeine caching, Mockito unit tests, a React front end, and deployment to AWS (ECR + App Runner + RDS).
+I first built this app in 2025 following LaiOffer's OnlineOrder course (the project was called OnlineOrder then): Spring Boot, Spring Data JDBC, PostgreSQL, Spring Security form login, Caffeine caching, Mockito unit tests, a React front end, and deployment to AWS (ECR + App Runner + RDS).
 
 In 2026 I rebuilt it from scratch. The goal was to fix the problems I found when re-reading the original code, and to bring the tooling up to what teams use today. The rebuild was developed with AI pair-programming assistance (Claude).
 

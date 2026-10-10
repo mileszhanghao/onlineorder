@@ -1,8 +1,8 @@
 spring:
   application:
-    name: onlineorder
+    name: siuyeh
   datasource:
-    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:onlineorder}
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:siuyeh}
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:secret}
   flyway:

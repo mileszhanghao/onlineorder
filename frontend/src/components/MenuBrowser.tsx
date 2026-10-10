@@ -1,9 +1,61 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { App, Button, Card, Empty, List, Select, Space, Typography } from 'antd'
+import { App, Button, Card, Empty, Skeleton, Typography } from 'antd'
 import { useState } from 'react'
 import { api } from '../api'
-import { formatPrice } from '../format'
+import { formatPrice, splitName } from '../format'
+import type { MenuItem, Restaurant } from '../types'
+
+function RestaurantTab({ r, active, onClick }: { r: Restaurant; active: boolean; onClick: () => void }) {
+  return (
+    <button type="button" className={`spot ${active ? 'spot-active' : ''}`} onClick={onClick} aria-pressed={active}>
+      {r.imageUrl && <img src={r.imageUrl} alt="" loading="lazy" />}
+      <span>
+        <strong>{r.name}</strong>
+        <small>{r.address?.split(' · ')[0]}</small>
+      </span>
+    </button>
+  )
+}
+
+function DishCard({ item, adding, onAdd }: { item: MenuItem; adding: boolean; onAdd: () => void }) {
+  const [english, chinese] = splitName(item.name)
+  return (
+    <Card
+      className="dish"
+      cover={
+        item.imageUrl ? (
+          <img src={item.imageUrl} alt={english} loading="lazy" className="dish-photo" />
+        ) : (
+          <div className="dish-photo dish-photo-empty">宵</div>
+        )
+      }
+    >
+      <div className="dish-title">
+        <Typography.Text strong>{english}</Typography.Text>
+        {chinese && <span className="dish-zh">{chinese}</span>}
+      </div>
+      <Typography.Paragraph type="secondary" className="dish-desc">
+        {item.description}
+      </Typography.Paragraph>
+      <div className="dish-footer">
+        <Typography.Text strong className="dish-price">
+          {formatPrice(item.price)}
+        </Typography.Text>
+        <Button
+          type="primary"
+          shape="round"
+          aria-label={`Add ${item.name} to cart`}
+          icon={<PlusOutlined />}
+          loading={adding}
+          onClick={onAdd}
+        >
+          Add
+        </Button>
+      </div>
+    </Card>
+  )
+}
 
 export default function MenuBrowser() {
   const queryClient = useQueryClient()
@@ -13,58 +65,49 @@ export default function MenuBrowser() {
 
   const addToCart = useMutation({
     mutationFn: api.addToCart,
-    onSuccess: (cart) => {
+    onSuccess: (cart, itemId) => {
       queryClient.setQueryData(['cart'], cart)
-      message.success('Added to cart')
+      const line = cart.items.find((l) => l.menuItemId === itemId)
+      message.success(line ? `${splitName(line.name)[0]} × ${line.quantity} in your cart` : 'Added to cart')
     },
     onError: (error) => message.error(error.message),
   })
 
-  const restaurant = restaurants.data?.find((r) => r.id === selectedId) ?? restaurants.data?.[0]
+  if (restaurants.isPending) return <Skeleton active />
+  if (!restaurants.data?.length) return <Empty description="No restaurants are open right now" />
+
+  const restaurant = restaurants.data.find((r) => r.id === selectedId) ?? restaurants.data[0]
+  const details = restaurant.address?.split(' · ') ?? []
 
   return (
-    <Space orientation="vertical" size="large" style={{ width: '100%' }}>
-      <Select
-        style={{ width: '100%', maxWidth: 360 }}
-        placeholder="Choose a restaurant"
-        loading={restaurants.isPending}
-        value={restaurant?.id}
-        onChange={setSelectedId}
-        options={restaurants.data?.map((r) => ({ value: r.id, label: r.name }))}
-      />
-      {restaurant && (
+    <div className="menu">
+      <nav className="spots" aria-label="Restaurants">
+        {restaurants.data.map((r) => (
+          <RestaurantTab key={r.id} r={r} active={r.id === restaurant.id} onClick={() => setSelectedId(r.id)} />
+        ))}
+      </nav>
+
+      <header className="spot-hero">
+        <Typography.Title level={2}>{restaurant.name}</Typography.Title>
         <Typography.Text type="secondary">
-          {restaurant.address} · {restaurant.phone}
+          {[...details, restaurant.phone].filter(Boolean).join(' · ')}
         </Typography.Text>
+      </header>
+
+      {restaurant.menuItems.length ? (
+        <div className="dishes">
+          {restaurant.menuItems.map((item) => (
+            <DishCard
+              key={item.id}
+              item={item}
+              adding={addToCart.isPending && addToCart.variables === item.id}
+              onAdd={() => addToCart.mutate(item.id)}
+            />
+          ))}
+        </div>
+      ) : (
+        <Empty description="No menu items" />
       )}
-      <List
-        loading={restaurants.isPending}
-        grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
-        dataSource={restaurant?.menuItems ?? []}
-        locale={{ emptyText: <Empty description="No menu items" /> }}
-        renderItem={(item) => (
-          <List.Item>
-            <Card
-              title={item.name}
-              extra={
-                <Button
-                  type="primary"
-                  shape="circle"
-                  aria-label={`Add ${item.name} to cart`}
-                  icon={<PlusOutlined />}
-                  loading={addToCart.isPending && addToCart.variables === item.id}
-                  onClick={() => addToCart.mutate(item.id)}
-                />
-              }
-            >
-              <Typography.Paragraph type="secondary" style={{ minHeight: 44 }}>
-                {item.description}
-              </Typography.Paragraph>
-              <Typography.Text strong>{formatPrice(item.price)}</Typography.Text>
-            </Card>
-          </List.Item>
-        )}
-      />
-    </Space>
+    </div>
   )
 }

@@ -13,14 +13,14 @@ describe('demo API', () => {
     await demoApi.addToCart(1)
     await demoApi.addToCart(1)
     let cart = await demoApi.addToCart(4)
-    expect(cart.totalPrice).toBe(38.75)
+    expect(cart.totalPrice).toBe(35.5)
 
     cart = await demoApi.removeFromCart(4)
     expect(cart.items).toHaveLength(1)
-    expect(cart.totalPrice).toBe(31)
+    expect(cart.totalPrice).toBe(29)
 
     const order = await demoApi.checkout()
-    expect(order).toMatchObject({ status: 'PLACED', totalPrice: 31 })
+    expect(order).toMatchObject({ status: 'PLACED', totalPrice: 29 })
     expect((await demoApi.cart()).items).toHaveLength(0)
     expect(await demoApi.orders()).toHaveLength(1)
   })

@@ -31,7 +31,11 @@ export default function App() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header className="app-header">
-        <Typography.Title level={3}>OnlineOrder</Typography.Title>
+        <div className="brand">
+          <Typography.Title level={3}>SiuYeh</Typography.Title>
+          <span className="brand-zh">宵夜</span>
+          <span className="brand-tagline">late-night eats around Seattle</span>
+        </div>
         {loggedIn && (
           <Space wrap>
             <Button icon={<UnorderedListOutlined />} onClick={() => setOrdersOpen(true)}>
@@ -57,12 +61,20 @@ export default function App() {
         )}
         {loggedIn && (
           <>
-            <Typography.Paragraph>Hi {me.data.firstName}, what would you like to eat?</Typography.Paragraph>
+            <Typography.Paragraph>Hi {me.data.firstName}, still hungry? Here&apos;s what&apos;s open late tonight.</Typography.Paragraph>
             <MenuBrowser />
             <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
             <OrdersDrawer open={ordersOpen} onClose={() => setOrdersOpen(false)} />
           </>
         )}
+        <Typography.Paragraph type="secondary" className="credits">
+          SiuYeh 宵夜 (Cantonese for “late-night snack”) is a portfolio project; the restaurants are fictional.
+          Dish photos come from Wikimedia Commons under their own licenses, listed in{' '}
+          <a href="https://github.com/mileszhanghao/siuyeh/blob/main/CREDITS.md" target="_blank" rel="noreferrer">
+            CREDITS.md
+          </a>
+          .
+        </Typography.Paragraph>
       </Content>
     </Layout>
   )

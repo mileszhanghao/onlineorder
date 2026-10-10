@@ -1,5 +1,12 @@
+:root {
+  --night: #1c1917;
+  --lantern: #c2410c;
+  --paper: #fffaf3;
+}
+
 body {
   margin: 0;
+  background: var(--paper);
 }
 
 .app-header {
@@ -8,18 +15,166 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding-inline: 16px;
+  background: var(--night);
+  height: auto;
+  min-height: 64px;
+  flex-wrap: wrap;
 }
 
-.app-header h3.ant-typography {
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
   color: #fff;
-  margin: 0;
   white-space: nowrap;
 }
 
+.brand h3.ant-typography {
+  color: #fff;
+  margin: 0;
+}
+
+.brand-zh {
+  color: #fdba74;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.brand-tagline {
+  color: #a8a29e;
+  font-size: 13px;
+}
+
+@media (max-width: 560px) {
+  .brand-tagline {
+    display: none;
+  }
+}
+
 .app-content {
-  padding: 24px 16px;
+  padding: 24px 16px 48px;
   max-width: 1100px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
+}
+
+/* Restaurant picker */
+.spots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.spot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.spot:hover {
+  border-color: #fdba74;
+}
+
+.spot-active {
+  border-color: var(--lantern);
+  box-shadow: 0 0 0 2px rgba(194, 65, 12, 0.15);
+}
+
+.spot img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex: none;
+}
+
+.spot span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.spot small {
+  color: #78716c;
+}
+
+.spot-hero {
+  margin: 28px 0 16px;
+}
+
+.spot-hero h2.ant-typography {
+  margin-bottom: 4px;
+}
+
+/* Dish cards */
+.dishes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.dish {
+  height: 100%;
+  overflow: hidden;
+}
+
+.dish .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dish-photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.dish-photo-empty {
+  display: grid;
+  place-items: center;
+  background: #fde7d4;
+  color: var(--lantern);
+  font-size: 48px;
+}
+
+.dish-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.dish-zh {
+  color: var(--lantern);
+  font-size: 15px;
+}
+
+.dish-desc {
+  flex: 1;
+  margin-bottom: 4px !important;
+}
+
+.dish-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dish-price {
+  font-size: 16px;
+}
+
+.credits {
+  margin-top: 40px;
+  font-size: 12px;
+  text-align: center;
 }

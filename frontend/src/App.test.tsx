@@ -44,11 +44,11 @@ describe('App', () => {
         body: [
           {
             id: 1,
-            name: 'Lakeview Noodle House',
-            address: '100 Demo Ave',
+            name: '九龍夜 Kowloon Nights',
+            address: 'Cha chaan teng · U District, Seattle',
             phone: '555',
             imageUrl: null,
-            menuItems: [{ id: 1, name: 'Beef Noodle Soup', description: 'Braised', price: 15.5, imageUrl: null }],
+            menuItems: [{ id: 1, name: 'Egg Tarts (3) · 蛋撻', description: 'Wobbly custard', price: 6.5, imageUrl: null }],
           },
         ],
       },
@@ -57,7 +57,8 @@ describe('App', () => {
     renderApp()
 
     expect(await screen.findByText(/Hi Miles/)).toBeInTheDocument()
-    expect(await screen.findByText('Beef Noodle Soup')).toBeInTheDocument()
-    expect(screen.getByText('$15.50')).toBeInTheDocument()
+    expect(await screen.findByText('Egg Tarts (3)')).toBeInTheDocument()
+    expect(screen.getByText('蛋撻')).toBeInTheDocument()
+    expect(screen.getByText('$6.50')).toBeInTheDocument()
   })
 })

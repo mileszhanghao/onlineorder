@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Alert, Button, Typography } from 'antd'
 import { DEMO_EMAIL, DEMO_PASSWORD, resetDemo } from '../demo/demoApi'
 
-const REPO_URL = 'https://github.com/mileszhanghao/onlineorder'
+const REPO_URL = 'https://github.com/mileszhanghao/siuyeh'
 
 /** Shown only in the GitHub Pages build so nobody mistakes it for the full deployment. */
 export default function DemoBanner() {
